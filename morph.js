@@ -2,16 +2,18 @@ let container, texture, particleCon;
 let leon, controll;
 const particleTotal = 5000;
 let particles = [];
-let myText = 'Digital Futures '.split('');
+let myText = 'DigitalFutures '.split('');
 const textTotal = myText.length;
 let curText = -1;
-let DELAY_TIME = 0.8;
+let raf;
 
 const config = {
   outline: false,
   outlineColor: 0x000000,
   bgColor: 0xfec82e,
   weight: 9,
+  delay: .8,
+  tweenTimescale: 1,
 }
 
 function init() {
@@ -79,7 +81,7 @@ function init() {
 
   stage.filters = [blurFilter, thresholdFilter];
 
-  if (config.outline){
+  if (config.outline) {
     stage.filters.push(outlineFilter);
   }
   stage.filterArea = renderer.screen;
@@ -92,7 +94,7 @@ function init() {
   leon = new LeonSans({
     text: '',
     size: 600,
-    weight: 700,
+    weight: config.weight * 100,
     pathGap: -1,
     isPath: true
   });
@@ -100,7 +102,7 @@ function init() {
     update(data);
   });
 
-  
+
   const gui = new dat.GUI();
   gui.hide();
   gui.add(leon, 'size', 400, 1000);
@@ -114,19 +116,28 @@ function init() {
     }
   });
 
-  requestAnimationFrame(animate);
+  raf = requestAnimationFrame(animate);
 
   showText();
 }
 
 function nextText() {
   TweenMax.killDelayedCallsTo(showText);
-  TweenMax.delayedCall(DELAY_TIME, showText);
+  TweenMax.delayedCall(config.delay*config.tweenTimescale, showText);
 }
 
 function showText() {
   curText += 1;
-  if (curText == textTotal) curText = 0;
+  if (curText == textTotal){
+    if (config.doRepeat){
+       curText = 0;
+    } else {
+      console.log('done');
+      window.cancelAnimationFrame(raf);
+      raf = undefined;
+      return;
+    }
+  }
   leon.text = myText[curText];
   nextText();
 }
@@ -151,6 +162,7 @@ function update(model) {
   let i, p, pos, scale;
   for (i = 0; i < particleTotal; i++) {
     p = particles[i];
+    const { tweenTimescale } = config;
     TweenMax.killTweensOf(p);
     if (i < total) {
       pos = model.paths[i];
@@ -159,30 +171,30 @@ function update(model) {
       } else {
         scale = controll.weight * 0.01 * leon.scale;
       }
-      TweenMax.to(p, 0.4, {
+      TweenMax.to(p, 0.4 * tweenTimescale, {
         x: sw2,
         y: sh2,
         ease: Sine.easeIn
       });
-      TweenMax.to(p, 0.5, {
+      TweenMax.to(p, 0.5 * tweenTimescale, {
         delay: 0.3,
         x: pos.x,
         y: pos.y,
         ease: Expo.easeOut
       });
-      TweenMax.to(p.scale, 0.5, {
+      TweenMax.to(p.scale, 0.5 * tweenTimescale, {
         delay: 0.3,
         x: scale,
         y: scale,
         ease: Expo.easeOut
       });
     } else {
-      TweenMax.to(p, 0.3, {
+      TweenMax.to(p, 0.3 * tweenTimescale, {
         x: sw2,
         y: sh2,
         ease: Sine.easeIn
       });
-      TweenMax.to(p.scale, 0.3, {
+      TweenMax.to(p.scale, 0.3 * tweenTimescale, {
         x: 0,
         y: 0,
         ease: Sine.easeIn
@@ -193,7 +205,7 @@ function update(model) {
 }
 
 function animate(t) {
-  requestAnimationFrame(animate);
+  raf = requestAnimationFrame(animate);
 
   const x = (sw - leon.rect.w) / 2;
   const y = (sh - leon.rect.h) / 2;
