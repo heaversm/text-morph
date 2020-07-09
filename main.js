@@ -1,5 +1,6 @@
 import { gsap, Power4, Circ } from "gsap";
 
+
 let leon, canvas, ctx;
 
 const sw = document.body.clientWidth;

@@ -3815,7 +3815,8 @@
     _wake();
   }
 
-  var Circ = _easeMap.Circ;
+  var Sine = _easeMap.Sine,
+      Expo = _easeMap.Expo;
 
   /*!
    * CSSPlugin 3.4.0
@@ -5221,24 +5222,30 @@
       // to protect from tree shaking
   TweenMaxWithCSS = gsapWithCSS.core.Tween;
 
-  let leon;
+  let textTimeout;
 
   const sw = document.body.clientWidth;
   const sh = document.body.clientHeight;
 
   const $container = document.querySelector(".container");
 
-  let texture, particleCon, control;
-  const particleTotal = 3000;
+  let texture, particleCon;
+  let leon, controll;
+
+  const particleTotal = 5000;
   let particles = [];
+  let myText = ['d', 'f', 't'];
+  const textTotal = myText.length;
+  let curText = -1;
+  let DELAY_TIME = 0.8;
 
   function init() {
-    generatePixi(0x000000, ".container");
+    generatePixi(0x40B787, ".container");
     texture = PIXI.Texture.from("drop-alpha.png");
     particleCon = new PIXI.ParticleContainer(particleTotal, {
       vertices: false,
       scale: true,
-      position: true,
+      position: false,
       rotation: false,
       uvs: false,
       alpha: false,
@@ -5261,102 +5268,123 @@
     blurFilter.autoFit = true;
 
     const fragSource = [
-      "precision mediump float;",
-      "varying vec2 vTextureCoord;",
-      "uniform sampler2D uSampler;",
-      "uniform float threshold;",
-      "uniform float mr;",
-      "uniform float mg;",
-      "uniform float mb;",
-      "void main(void)",
-      "{",
-      "    vec4 color = texture2D(uSampler, vTextureCoord);",
-      "    vec3 mcolor = vec3(mr, mg, mb);",
-      "    if (color.a > threshold) {",
-      "       gl_FragColor = vec4(mcolor, 1.0);",
-      "    } else {",
-      "       gl_FragColor = vec4(vec3(0.0), 0.0);",
-      "    }",
-      "}",
-    ].join("\n");
+      'precision mediump float;',
+      'varying vec2 vTextureCoord;',
+      'uniform sampler2D uSampler;',
+      'uniform float threshold;',
+      'uniform float mr;',
+      'uniform float mg;',
+      'uniform float mb;',
+      'void main(void)',
+      '{',
+      '    vec4 color = texture2D(uSampler, vTextureCoord);',
+      '    vec3 mcolor = vec3(mr, mg, mb);',
+      '    if (color.a > threshold) {',
+      '       gl_FragColor = vec4(mcolor, 1.0);',
+      '    } else {',
+      '       gl_FragColor = vec4(vec3(0.0), 0.0);',
+      '    }',
+      '}'
+    ].join('\n');
 
-    renderer.backgroundColor = 0xffffff;
+    //renderer.backgroundColor = 0xffffff;
 
     const uniformsData = {
       threshold: 0.5,
-      mr: 0.0 / 255.0,
-      mg: 0.0 / 255.0,
-      mb: 0.0 / 255.0,
+      mr: 255.0 / 255.0,
+      mg: 255.0 / 255.0,
+      mb: 255.0 / 255.0,
     };
 
     const thresholdFilter = new PIXI.Filter(null, fragSource, uniformsData);
     stage.filters = [blurFilter, thresholdFilter];
     stage.filterArea = renderer.screen;
 
-    control = {
+    const outlineFilterBlue = new PIXI.filters.OutlineFilter(1, 0x000000);
+
+    stage.filters = [blurFilter, thresholdFilter, outlineFilterBlue];
+    stage.filterArea = renderer.screen;
+
+    controll = {
       weight: 9,
-      color: {},
-      outline: true,
-      drawing: () => {
-        let i;
-        for (i = 0; i < particleTotal; i++) {
-          gsapWithCSS.killTweensOf(particles[i].scale);
-          gsapWithCSS.set(particles[i].scale, {
-            x: 0,
-            y: 0,
-          });
-          gsapWithCSS.to(particles[i].scale, 3, {
-            delay: 0.001 * i,
-            x: particles[i].saveScale,
-            y: particles[i].saveScale,
-            ease: Circ.easeOut,
-          });
-        }
-      },
+      outline: true
     };
 
     leon = new LeonSans({
-      text: "dft",
-      size: getSize(400),
+      text: '',
+      size: 600,
       weight: 900,
       pathGap: -1,
       isPath: true,
-      tracking: 0,
     });
 
-    leon.on("update", (model) => {
-      update();
+    leon.on('update', (data) => {
+      update(data);
     });
 
     requestAnimationFrame(animate);
 
-    gsapWithCSS.delayedCall(1, () => {
-      control.drawing();
-    });
+    showText();
   }
 
-  function update() {
-    const total = leon.paths.length;
+  function showText() {
+    curText += 1;
+    if (curText == textTotal) curText = 0;
+    leon.text = myText[curText];
+    nextText();
+  }
+
+  function nextText() {
+    // gsap.killDelayedCallsTo(showText);
+    // gsap.delayedCall(DELAY_TIME, showText);
+    clearTimeout(showText);
+    textTimeout = setTimeout(showText, DELAY_TIME);
+  }
+
+  function update(model) {
+    const total = model.paths.length;
+    const sw2 = sw / 2;
+    const sh2 = sh / 2;
     let i, p, pos, scale;
     for (i = 0; i < particleTotal; i++) {
       p = particles[i];
-      gsapWithCSS.killTweensOf(p.scale);
+      gsapWithCSS.killTweensOf(p);
       if (i < total) {
-        pos = leon.paths[i];
-        if (pos.type == "a") {
-          scale = control.weight * 0.025 * leon.scale;
+        pos = model.paths[i];
+        if (pos.type == 'a') {
+          scale = controll.weight * 0.02 * leon.scale;
         } else {
-          scale = control.weight * 0.01 * leon.scale;
+          scale = controll.weight * 0.01 * leon.scale;
         }
-        p.saveScale = scale;
-        p.x = pos.x;
-        p.y = pos.y;
-        p.scale.x = p.scale.y = scale;
+        gsapWithCSS.to(p, 0.4, {
+          x: sw2,
+          y: sh2,
+          ease: Sine.easeIn
+        });
+        gsapWithCSS.to(p, 0.5, {
+          delay: 0.3,
+          x: pos.x,
+          y: pos.y,
+          ease: Expo.easeOut
+        });
+        gsapWithCSS.to(p.scale, 0.5, {
+          delay: 0.3,
+          x: scale,
+          y: scale,
+          ease: Expo.easeOut
+        });
       } else {
-        p.saveScale = 0;
-        p.x = -1000;
-        p.y = -1000;
-        p.scale.x = p.scale.y = 0;
+        gsapWithCSS.to(p, 0.3, {
+          x: sw2,
+          y: sh2,
+          ease: Sine.easeIn
+        });
+        gsapWithCSS.to(p.scale, 0.3, {
+          x: 0,
+          y: 0,
+          ease: Sine.easeIn
+        });
+
       }
     }
   }
