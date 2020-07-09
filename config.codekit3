@@ -17,6 +17,25 @@
 		"oAP": "/.gitignore",
 		"oF": 0
 		},
+	"/.vscode/settings.json": {
+		"ft": 524288,
+		"oA": 1,
+		"oAP": "/.vscode/settings-min.json",
+		"oF": 0,
+		"oO": 0,
+		"oS": 1
+		},
+	"/drop-alpha.png": {
+		"ft": 32768,
+		"iS": 53319,
+		"oA": 0,
+		"oAP": "/drop-alpha.png",
+		"oF": 0,
+		"oIPL": 0,
+		"opt": 0,
+		"oT": 1,
+		"q": 100
+		},
 	"/index.html": {
 		"cB": 0,
 		"ft": 8192,
@@ -69,7 +88,7 @@
 		"bF": 4,
 		"ft": 64,
 		"ma": 0,
-		"mi": 1,
+		"mi": 0,
 		"oA": 0,
 		"oAP": "/main-min.js",
 		"oF": 1,
@@ -128,6 +147,17 @@
 		"sC": 3,
 		"tS": 0
 		},
+	"/node_modules/ismobilejs/esm/index.js": {
+		"bF": 0,
+		"ft": 64,
+		"ma": 0,
+		"mi": 1,
+		"oA": 1,
+		"oAP": "/node_modules/ismobilejs/esm/index-min.js",
+		"oF": 0,
+		"sC": 3,
+		"tS": 0
+		},
 	"/package-lock.json": {
 		"ft": 524288,
 		"oA": 1,
@@ -143,6 +173,28 @@
 		"oF": 0,
 		"oO": 0,
 		"oS": 1
+		},
+	"/utils-min.js": {
+		"bF": 0,
+		"ft": 64,
+		"ma": 0,
+		"mi": 1,
+		"oA": 0,
+		"oAP": "/utils-min-min.js",
+		"oF": 0,
+		"sC": 3,
+		"tS": 0
+		},
+	"/utils.js": {
+		"bF": 0,
+		"ft": 64,
+		"ma": 0,
+		"mi": 1,
+		"oA": 0,
+		"oAP": "/utils-min.js",
+		"oF": 0,
+		"sC": 0,
+		"tS": 0
 		}
 	},
 "hooks": [

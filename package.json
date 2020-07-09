@@ -7,6 +7,7 @@
   "license": "UNLICENSED",
   "repository": {},
   "dependencies": {
-    "gsap": "^3.4.0"
+    "gsap": "^3.4.0",
+    "pixi.js": "^5.3.0"
   }
 }
