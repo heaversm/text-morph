@@ -110,7 +110,7 @@ function init() {
 
   requestAnimationFrame(animate);
 
-  gsap.delayedCall(0.1, () => {
+  gsap.delayedCall(1, () => {
     control.drawing();
   });
 }

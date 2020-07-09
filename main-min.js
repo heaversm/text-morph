@@ -5298,6 +5298,7 @@
       color: {},
       outline: true,
       drawing: () => {
+        console.log('drawing');
         let i;
         for (i = 0; i < particleTotal; i++) {
           gsapWithCSS.killTweensOf(particles[i].scale);
@@ -5330,7 +5331,7 @@
 
     requestAnimationFrame(animate);
 
-    gsapWithCSS.delayedCall(0.1, () => {
+    gsapWithCSS.delayedCall(1, () => {
       control.drawing();
     });
   }
