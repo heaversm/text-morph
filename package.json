@@ -7,6 +7,6 @@
   "license": "UNLICENSED",
   "repository": {},
   "dependencies": {
-    "gsap": "^3.4.0"
+    "gsap": "^3.6.0"
   }
 }
